@@ -447,9 +447,11 @@ func (proxier *ProxierIptables) syncProxyRules() error {
 	return err
 }
 
-// Temporary hack to deal with when the proxy allocator gives us 0 as the port
-// we can fall back on opening and closing a socket with the port set to 0
-// and getting the port from that chosen by the OS in theory.
+// This is used when the port allocator returns 0, meaning we are using the "random" allocator.
+// The "random" allocator always returns zero and does not track ports therefore we can safely
+// ask the kernel for a port by opening a socket with port 0 and we do not need to worry about
+// clashing with the port allocator. This should only be used in that case. Any other time we
+// should get it from the allocator.
 func getRandomPortFromSocket(protocol api.Protocol, ip net.IP) (int, error) {
 	host := ip.String()
 	switch strings.ToUpper(string(protocol)) {
