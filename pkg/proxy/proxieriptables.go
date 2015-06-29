@@ -53,7 +53,7 @@ func ShouldUseProxierIptables() (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return (major >= IPTABLES_MIN_MAJOR) && (minor > IPTABLES_MIN_MINOR) && (patch > IPTABLES_MIN_PATCH), err
+	return (major >= IPTABLES_MIN_MAJOR) && (minor >= IPTABLES_MIN_MINOR) && (patch >= IPTABLES_MIN_PATCH), err
 }
 
 // This is the same as serviceInfo just without a socket
