@@ -388,7 +388,7 @@ func (proxier *ProxierIptables) syncProxyRules() error {
 			}
 			// Roughly round robin statistically if we have more than one host
 			if n > 1 {
-				rulesEnd.WriteString(fmt.Sprintf("-A %s -m statistic --mode random --probability %f -j %s\n", svcChain, 1.0/(n-i), hostChain))
+				rulesEnd.WriteString(fmt.Sprintf("-A %s -m statistic --mode random --probability %f -j %s\n", svcChain, 1.0/float64(n-i), hostChain))
 			} else {
 				rulesEnd.WriteString(fmt.Sprintf("-A %s -j %s\n", svcChain, hostChain))
 			}
