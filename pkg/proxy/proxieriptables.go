@@ -443,7 +443,7 @@ func (proxier *ProxierIptables) syncProxyRules() error {
 
 	// NOTE: --noflush is used so we don't flush all rules.
 	// we manually flush the rules we need to flush.
-	err := iptables.Restore([]string{"--noflush"}, lines)
+	err := iptables.Restore([]string{"--noflush","--wait"}, lines)
 	return err
 }
 
