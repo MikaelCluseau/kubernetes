@@ -48,7 +48,7 @@ func calculateScore(requested int64, capacity int64, node string) int {
 // and that when scheduling regular pods, such pods will not see zero-limit pods as
 // consuming no resources whatsoever. We chose these values to be similar to the
 // resources that we give to cluster addon pods (#10653). But they are pretty arbitrary.
-const defaultMilliCpuLimit int64 = 100             // 0.1 core
+const defaultMilliCpuLimit int64 = 50              // 0.05 core
 const defaultMemoryLimit int64 = 200 * 1024 * 1024 // 200 MB
 
 // TODO: Consider setting default as a fixed fraction of machine capacity (take "capacity api.ResourceList"
