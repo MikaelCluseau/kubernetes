@@ -1126,16 +1126,23 @@ func TestValidateVolumeMounts(t *testing.T) {
 		{Name: "abc", MountPath: "/foo"},
 		{Name: "123", MountPath: "/foo"},
 		{Name: "abc-123", MountPath: "/bar"},
+		{Name: "abc-123", MountPath: "/bar", SubPath: ""},
+		{Name: "abc-123", MountPath: "/bar", SubPath: "baz"},
+		{Name: "abc-123", MountPath: "/bar", SubPath: ".baz"},
+		{Name: "abc-123", MountPath: "/bar", SubPath: "..baz"},
 	}
 	if errs := validateVolumeMounts(successCase, volumes, field.NewPath("field")); len(errs) != 0 {
 		t.Errorf("expected success: %v", errs)
 	}
 
 	errorCases := map[string][]api.VolumeMount{
-		"empty name":      {{Name: "", MountPath: "/foo"}},
-		"name not found":  {{Name: "", MountPath: "/foo"}},
-		"empty mountpath": {{Name: "abc", MountPath: ""}},
-		"colon mountpath": {{Name: "abc", MountPath: "foo:bar"}},
+		"empty name":          {{Name: "", MountPath: "/foo"}},
+		"name not found":      {{Name: "", MountPath: "/foo"}},
+		"empty mountpath":     {{Name: "abc", MountPath: ""}},
+		"colon mountpath":     {{Name: "abc", MountPath: "foo:bar"}},
+		"absolute subpath":    {{Name: "abc", MountPath: "/bar", SubPath: "/baz"}},
+		"subpath in ..":       {{Name: "abc", MountPath: "/bar", SubPath: "../baz"}},
+		"subpath contains ..": {{Name: "abc", MountPath: "/bar", SubPath: "baz/../bat"}},
 	}
 	for k, v := range errorCases {
 		if errs := validateVolumeMounts(v, volumes, field.NewPath("field")); len(errs) == 0 {

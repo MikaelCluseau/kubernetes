@@ -1120,6 +1120,9 @@ func validateVolumeMounts(mounts []api.VolumeMount, volumes sets.String, fldPath
 		} else if strings.Contains(mnt.MountPath, ":") {
 			allErrs = append(allErrs, field.Invalid(idxPath.Child("mountPath"), mnt.MountPath, "must not contain ':'"))
 		}
+		if len(mnt.SubPath) > 0 {
+			allErrs = append(allErrs, validateVolumeSourcePath(mnt.SubPath, fldPath.Child("subPath"))...)
+		}
 	}
 	return allErrs
 }

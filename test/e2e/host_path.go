@@ -18,6 +18,7 @@ package e2e
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path"
 
@@ -86,6 +87,27 @@ var _ = Describe("hostPath", func() {
 			"content of file \"/test-volume/test-file\": mount-tester new file",
 		}, namespace.Name,
 		)
+	})
+
+	It("should support subPath [Conformance]", func() {
+		volumePath := "/test-volume"
+		source := &api.HostPathVolumeSource{
+			Path: "/tmp",
+		}
+		pod := testPodWithHostVol(volumePath, source)
+		container := pod.Spec.Containers[0]
+		container.Image = "busybox"
+		container.VolumeMounts[0].SubPath = "sub-path"
+		container.Args = []string{
+			"cat",
+			"/test-volume/file",
+		}
+		pod.Spec.Containers = []api.Container{container}
+		os.MkdirAll("/tmp/sub-path", 0755)
+		ioutil.WriteFile("/tmp/sub-path/file", []byte("test\n"), 0644)
+		framework.TestContainerOutput("hostPath subPath", c, pod, 0, []string{
+			"test",
+		}, namespace.Name)
 	})
 })
 

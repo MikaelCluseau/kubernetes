@@ -869,6 +869,9 @@ type VolumeMount struct {
 	// Path within the container at which the volume should be mounted.  Must
 	// not contain ':'.
 	MountPath string `json:"mountPath"`
+	// Path within the volume from which the container's volume should be mounted.
+	// Defaults to "" (volume's root).
+	SubPath string `json:"subPath,omitempty"`
 }
 
 // EnvVar represents an environment variable present in a Container.
@@ -2101,7 +2104,7 @@ type NodeStatus struct {
 	// More info: http://releases.k8s.io/release-1.2/docs/admin/node.md#node-info
 	NodeInfo NodeSystemInfo `json:"nodeInfo,omitempty"`
 	// List of container images on this node
-	Images []ContainerImage `json:"images",omitempty`
+	Images []ContainerImage `json:"images,omitempty"`
 }
 
 // Describe a container image
