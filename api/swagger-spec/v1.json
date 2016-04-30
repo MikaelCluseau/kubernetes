@@ -15612,9 +15612,6 @@
    "v1.NodeStatus": {
     "id": "v1.NodeStatus",
     "description": "NodeStatus is information about the current status of a node.",
-    "required": [
-     "images"
-    ],
     "properties": {
      "capacity": {
       "type": "any",
@@ -17005,6 +17002,10 @@
      "mountPath": {
       "type": "string",
       "description": "Path within the container at which the volume should be mounted.  Must not contain ':'."
+     },
+     "subPath": {
+      "type": "string",
+      "description": "Path within the volume from which the container's volume should be mounted. Defaults to \"\" (volume's root)."
      }
     }
    },
