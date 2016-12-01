@@ -262,6 +262,10 @@ func (f flexVolumeMounter) GetAttributes() volume.Attributes {
 
 // flexVolumeManager is the abstract interface to flex volume ops.
 type flexVolumeManager interface {
+	// Attaches the disk to the kubelet's host machine, from the volume manager.
+	managerAttach(options map[string]string, hostName string) (string, error)
+	// Detaches the disk from the kubelet's host machine, from the volume manager.
+	managerDetach(deviceName, hostName string) error
 	// Attaches the disk to the kubelet's host machine.
 	attach(mounter *flexVolumeMounter) (string, error)
 	// Detaches the disk from the kubelet's host machine.

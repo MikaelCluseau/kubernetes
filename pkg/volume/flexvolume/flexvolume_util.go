@@ -33,6 +33,9 @@ const (
 	mountCmd   = "mount"
 	unmountCmd = "unmount"
 
+	managerAttachCmd = "manager_attach"
+	managerDetachCmd = "manager_detach"
+
 	optionFSType    = "kubernetes.io/fsType"
 	optionReadWrite = "kubernetes.io/readwrite"
 	optionKeySecret = "kubernetes.io/secret"
@@ -101,6 +104,64 @@ func (u *flexVolumeUtil) init(plugin *flexVolumePlugin) error {
 	}
 
 	glog.V(5).Infof("Successfully initialized driver %s", plugin.driverName)
+	return nil
+}
+
+// Attach exposes a volume on the host.
+func (u *flexVolumeUtil) managerAttach(options map[string]string, hostName string) (string, error) {
+	execPath := f.execPath
+
+	var options string
+	if f.options != nil {
+		out, err := json.Marshal(f.options)
+		if err != nil {
+			glog.Errorf("Failed to marshal plugin options, error: %s", err.Error())
+			return "", err
+		}
+		if len(out) != 0 {
+			options = string(out)
+		} else {
+			options = ""
+		}
+	}
+
+	cmd := f.runner.Command(execPath, managerAttachCmd, options)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		glog.Errorf("Failed to attach volume %s, output: %s, error: %s", f.volName, output, err.Error())
+		_, err := handleCmdResponse(managerAttachCmd, output)
+		return "", err
+	}
+
+	status, err := handleCmdResponse(managerAttachCmd, output)
+	if err != nil {
+		return "", err
+	}
+
+	glog.Infof("Successfully attached volume %s on device: %s", f.volName, status.Device)
+
+	return status.Device, nil
+}
+
+// Detach detaches a volume from the host.
+func (u *flexVolumeUtil) managerDetach(deviceName, hostName string) error {
+	execPath := f.execPath
+
+	// Executable provider command.
+	cmd := f.runner.Command(execPath, managerDetachCmd, mntDevice)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		glog.Errorf("Failed to detach volume %s, output: %s, error: %s", f.volName, output, err.Error())
+		_, err := handleCmdResponse(managerDetachCmd, output)
+		return err
+	}
+
+	_, err = handleCmdResponse(managerDetachCmd, output)
+	if err != nil {
+		return err
+	}
+
+	glog.Infof("Successfully detached volume %s on device: %s", f.volName, mntDevice)
 	return nil
 }
 
